@@ -1,81 +1,52 @@
-# EZ-SaaS: Build Your SaaS in 12 Hours
+# FN Forecast
 
-A complete Next.js template that helps you build and launch your SaaS product in just 12 hours. This template includes everything you need to get started, from authentication to payments, with a beautiful UI and comprehensive documentation.
+A Next.js application for analyzing and forecasting Fortnite Creative map analytics.
 
-## 🚀 Features
-
-- **Complete Authentication System**
-  - Supabase integration
-  - Google OAuth support
-  - User profiles and management
-
-- **Payment Integration**
-  - Stripe integration
-  - One-time payment support
-  - Subscription management
-
-- **Modern Tech Stack**
-  - Next.js 14 with App Router
-  - TypeScript for type safety
-  - Tailwind CSS for styling
-  - Shadcn UI components
-
-- **Production Ready**
-  - Responsive design
-  - Dark mode support
-  - SEO optimized
-  - Performance focused
-
-## 🛠️ Getting Started
+## Setup
 
 1. Clone the repository:
-```bash
-git clone https://github.com/virocodes/quik.git [your-saas-name]
-cd [your-saas-name]
-```
+   ```bash
+   git clone https://github.com/virocodes/fn-forecast.git
+   cd fn-forecast
+   ```
 
 2. Install dependencies:
-```bash
-npm install
-```
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
 
-3. Set up your environment variables:
-```bash
-cp .env.example .env.local
-```
+3. Set up environment variables:
+   - Create `.env.local`
+   - Fill in required environment variables:
+     - `NEXT_PUBLIC_SUPABASE_URL`
+     - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+     - `SUPABASE_SERVICE_ROLE_KEY`
+     - `NEXT_PUBLIC_API_URL`
 
-4. Start the development server:
-```bash
-npm run dev
-```
+4. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
 
-Visit [http://localhost:3000](http://localhost:3000) to see your application.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-## 📚 Documentation
+6. Complete the steps in the other repo
 
-Detailed documentation is coming soon! The documentation will include:
 
-- Complete setup guide
-- Authentication configuration
-- Payment integration
-- Customization guide
-- Deployment instructions
-- Best practices
+## Approach
 
-For now, you can find basic setup instructions in the dashboard after purchasing the template.
+I built a basic Next.js app with Supabase that allows you sign in with Google OAuth or a magic link, has an account page where you can view and set your name/bio, and a main dashboard page where you can input a map code and get shown a graph and table of its last month of peak user data, and a get forecast button, which will then predict the next 30 days and add them to the chart and table. I built a separate FastAPI application that has the 
 
-## 💰 Pricing
+## Data Collection + Forecasting Technique
 
-- One-time payment of $50
-- Lifetime updates
-- No subscription required
-- Money-back guarantee
+The main struggle with scraping fortnite.gg is that you have the click the "1M" button to get the last months data dynamically rendered, so I couldn't just get the raw html of the page, I had to mock clicking the button and waiting for the new content to render. I was originally using Playwright, but it didn't work, as I think fortnite.gg had defenses against scraping and didn't render the new content when the button was clicked, so I switched to ScrapingBee which allowed me to click the button, render the new content, then scrape that from the table. 
 
-## 🤝 Support
-
-If you need help or have questions:
-
-- Open an issue on GitHub
-- Join our Discord community (coming soon)
-- Email support (coming soon)
-
+For forecasting, I use a combination of linear regression and weekly seasonality patterns. The algorithm calculates the overall trend using linear regression on the historical data, then applies day-of-week seasonality factors derived from past patterns. To make predictions feel more natural, I add controlled random variations (up to 15%) to the forecasted values while maintaining the underlying trend and seasonal patterns.

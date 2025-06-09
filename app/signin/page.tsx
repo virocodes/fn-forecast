@@ -1,37 +1,35 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import { useState } from "react";
-import { createClient } from "@/libs/supabase/client";
-import { Provider } from "@supabase/supabase-js";
-import toast from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
+import React from "react"
+import { useState } from "react"
+import { createClient } from "@/libs/supabase/client"
+import { Provider } from "@supabase/supabase-js"
+import toast from "react-hot-toast"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
 
-export default function Login() {
-  const supabase = createClient();
-  const [email, setEmail] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDisabled, setIsDisabled] = useState<boolean>(false);
+export default function SignIn() {
+  const supabase = createClient()
+  const [email, setEmail] = useState<string>("")
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isDisabled, setIsDisabled] = useState<boolean>(false)
 
   const handleSignup = async (
     e: React.FormEvent<HTMLFormElement>,
     options: {
-      type: string;
-      provider?: Provider;
+      type: string
+      provider?: Provider
     }
   ) => {
-    e?.preventDefault();
+    e?.preventDefault()
 
-    setIsLoading(true);
+    setIsLoading(true)
 
     try {
-      const { type, provider } = options;
-      const redirectURL = window.location.origin + "/api/auth/callback";
+      const { type, provider } = options
+      const redirectURL = window.location.origin + "/api/auth/callback"
 
       if (type === "oauth") {
         await supabase.auth.signInWithOAuth({
@@ -39,37 +37,50 @@ export default function Login() {
           options: {
             redirectTo: redirectURL,
           },
-        });
+        })
       } else if (type === "magic_link") {
         await supabase.auth.signInWithOtp({
           email,
           options: {
             emailRedirectTo: redirectURL,
           },
-        });
+        })
 
-        toast.success("Check your emails!");
+        toast.success("Check your emails!")
 
-        setIsDisabled(true);
+        setIsDisabled(true)
       }
     } catch (error) {
-      console.log(error);
+      console.log(error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full border-b bg-background/80 backdrop-blur-sm z-50">
+      <nav className="w-full border-b bg-background/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="font-bold text-xl flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground text-lg">✨</span>
-            </div>
-            Spark
-          </Link>
+          <div className="font-bold text-xl flex items-center gap-2">
+            <svg
+              className="w-6 h-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+            FN Forecast
+          </div>
+          <Button variant="ghost" onClick={() => {
+            window.location.href = "/"
+          }}>Back to Home</Button>
         </div>
       </nav>
 
@@ -77,10 +88,7 @@ export default function Login() {
         <div className="max-w-md mx-auto">
           <Card>
             <CardHeader className="space-y-1">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl">Welcome back</CardTitle>
-                <Badge variant="secondary">✨ New</Badge>
-              </div>
+              <CardTitle className="text-2xl">Welcome</CardTitle>
               <CardDescription>
                 Choose your preferred sign in method
               </CardDescription>
@@ -159,21 +167,11 @@ export default function Login() {
                 </Button>
               </form>
 
-              <p className="text-center text-sm text-muted-foreground">
-                By continuing, you agree to our{" "}
-                <Link href="/terms" className="underline underline-offset-4 hover:text-primary">
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link href="/privacy" className="underline underline-offset-4 hover:text-primary">
-                  Privacy Policy
-                </Link>
-                .
-              </p>
+
             </CardContent>
           </Card>
         </div>
       </main>
     </div>
-  );
+  )
 }

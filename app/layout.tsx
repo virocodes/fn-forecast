@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "quik",
-  description: "ship your saas quik.",
+  title: "FN Forecast",
+  description: "Analyze & Forecast Map Performance",
 };
 
 export default function RootLayout({

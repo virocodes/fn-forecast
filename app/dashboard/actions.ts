@@ -2,7 +2,7 @@
 
 import { createClient } from "@/libs/supabase/server";
 
-export async function getUserAndAccess() {
+export async function getUser() {
   const supabase = await createClient();
 
   const {
@@ -10,17 +10,8 @@ export async function getUserAndAccess() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { user: null, hasAccess: false };
+    return { user: null };
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('has_access')
-    .eq('id', user.id)
-    .single();
-
-  return {
-    user,
-    hasAccess: profile?.has_access ?? false
-  };
-} 
+  return { user };
+}
