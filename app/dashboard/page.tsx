@@ -52,8 +52,9 @@ export default function Dashboard() {
         method: 'POST',
         body: mapCode
       });
-      const { data } = await response.json();
-      setAnalyticsData(data);
+      const { dailyPeaks } = await response.json();
+      const formatted = dailyPeaks.map(({ date, peak }: { date: string, peak: number }) => [date, peak.toString()]).reverse();
+      setAnalyticsData(formatted);
       setForecastData([]); // Clear forecast data when new analysis is done
     } catch (error) {
       console.error('Error fetching analytics:', error);
