@@ -25,7 +25,6 @@ A Next.js application for analyzing and forecasting Fortnite Creative map analyt
      - `NEXT_PUBLIC_SUPABASE_URL`
      - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
      - `SUPABASE_SERVICE_ROLE_KEY`
-     - `NEXT_PUBLIC_API_URL`
 
 4. Run the development server:
    ```bash
@@ -38,15 +37,15 @@ A Next.js application for analyzing and forecasting Fortnite Creative map analyt
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-6. Complete the steps in the other repo
-
 
 ## Approach
 
-I built a basic Next.js app with Supabase that allows you sign in with Google OAuth or a magic link, has an account page where you can view and set your name/bio, and a main dashboard page where you can input a map code and get shown a graph and table of its last month of peak user data, and a get forecast button, which will then predict the next 30 days and add them to the chart and table. I built a separate FastAPI application that has the 
+I built a basic Next.js app with Supabase that allows you sign in with Google OAuth or a magic link, has an account page where you can view and set your name/bio, and a main dashboard page where you can input a map code and get shown a graph and table of its last month of peak user data, and a get forecast button, which will then predict the next 30 days and add them to the chart and table.
 
 ## Data Collection + Forecasting Technique
 
 The main struggle with scraping fortnite.gg is that you have the click the "1M" button to get the last months data dynamically rendered, so I couldn't just get the raw html of the page, I had to mock clicking the button and waiting for the new content to render. I was originally using Playwright, but it didn't work, as I think fortnite.gg had defenses against scraping and didn't render the new content when the button was clicked, so I switched to ScrapingBee which allowed me to click the button, render the new content, then scrape that from the table. 
+
+Edit: switched from web scraping to using the hidden api found in the network requests of fortnite.gg
 
 For forecasting, I use a combination of linear regression and weekly seasonality patterns. The algorithm calculates the overall trend using linear regression on the historical data, then applies day-of-week seasonality factors derived from past patterns. To make predictions feel more natural, I add controlled random variations (up to 15%) to the forecasted values while maintaining the underlying trend and seasonal patterns.
