@@ -22,12 +22,11 @@ function linearRegression(x: number[], y: number[]) {
 }
 
 // Calculate weekly seasonality from historical data
-function calculateSeasonality(dates: Date[], values: number[]) {
+function calculateSeasonality(dayOfWeekArr: number[], values: number[]) {
   const weeklyPattern = new Array(7).fill(0);
   const weeklyCount = new Array(7).fill(0);
 
-  dates.forEach((date, i) => {
-    const dayOfWeek = date.getDay();
+  dayOfWeekArr.forEach((dayOfWeek, i) => {
     weeklyPattern[dayOfWeek] += values[i];
     weeklyCount[dayOfWeek]++;
   });
@@ -93,23 +92,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // Extract dates and values
-    const dates = historicalData.map((row: string[]) => new Date(row[0]));
+    // Extract values
     const values = historicalData.map((row: string[]) => parseInt(row[1].replace(/,/g, '')));
-
-    // Convert dates to numeric values (days since first date)
-    const firstDate = dates[0];
-    const xValues = dates.map(date => Math.floor((date.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)));
+    const xValues = values.map((_, i) => i); // 0, 1, 2, ..., N-1
 
     // Calculate linear regression
     const { slope, intercept } = linearRegression(xValues, values);
 
-    // Calculate weekly seasonality
-    const seasonality = calculateSeasonality(dates, values);
+    // Calculate weekly seasonality using index as day of week
+    const seasonality = calculateSeasonality(xValues.map(i => i % 7), values);
     console.log('Calculated seasonality:', seasonality);
 
-    // Get the last date and value
-    const lastDate = dates[dates.length - 1];
+    // Use today as the last date
+    const lastDate = new Date();
+    lastDate.setHours(0, 0, 0, 0);
     const lastX = xValues[xValues.length - 1];
 
     // Predict next 30 days
@@ -118,21 +114,14 @@ export async function POST(request: Request) {
     // Format the forecast data
     const forecastData = predictions.map((value, index) => {
       const date = new Date(lastDate);
-      date.setDate(date.getDate() + index + 1);
-      
+      date.setDate(lastDate.getDate() + index + 1);
       return [
         date.toLocaleDateString('en-US', {
           weekday: 'long',
           month: 'short',
           day: 'numeric'
         }),
-        value.toLocaleString(),
-        '+0', // No change for forecast
-        '0%', // No percentage change for forecast
-        '0', // No other metrics for forecast
-        '0',
-        '0%',
-        '$0'
+        value.toLocaleString()
       ];
     });
 
